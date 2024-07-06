@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Device {
+  business     Business? @relation(fields: [businessId], references: [id])
+  businessId   String?
+  createdAt    DateTime  @default(now())
+  id           String    @id @default(cuid())
+  ioTDataItems IoTData[]
+  serialNumber String?
+  updatedAt    DateTime  @updatedAt
+}
+
+model Business {
+  createdAt DateTime @default(now())
+  devices   Device[]
+  email     String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model IoTData {
+  createdAt DateTime  @default(now())
+  data      Json?
+  device    Device?   @relation(fields: [deviceId], references: [id])
+  deviceId  String?
+  id        String    @id @default(cuid())
+  timestamp DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
+  createdAt  DateTime  @default(now())
+  email      String?   @unique
+  firstName  String?
+  id         String    @id @default(cuid())
+  lastName   String?
+  password   String
+  roles      Json
+  updatedAt  DateTime  @updatedAt
+  username   String    @unique
+}
